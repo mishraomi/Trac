@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "801379148917",
+    "firebase_url": "https://trac-6e746.firebaseio.com",
+    "project_id": "trac-6e746",
+    "storage_bucket": "trac-6e746.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801379148917:android:d8c114501d8e7677",
+        "android_client_info": {
+          "package_name": "com.firebolt.trac"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801379148917-2p1d88fjnj4l0k0mve7a7hkg6pefm5bf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firebolt.trac",
+            "certificate_hash": "7E271078DC98DFFD855126981997C5A7727B0F19"
+          }
+        },
+        {
+          "client_id": "801379148917-nqcrfelcmfnd782idcrh938apuksertj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCurCADnooRFtK65y8ACpbtOMhoyRHwSlo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801379148917-nqcrfelcmfnd782idcrh938apuksertj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
