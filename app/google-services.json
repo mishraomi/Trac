@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "801379148917-ald3f7om56q7ku5lr21du5mab0cqa4tv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firebolt.trac",
+            "certificate_hash": "1C049F60C3490E906BA226C9D8154F84B5FE9335"
+          }
+        },
+        {
           "client_id": "801379148917-2p1d88fjnj4l0k0mve7a7hkg6pefm5bf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
