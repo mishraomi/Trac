@@ -79,7 +79,20 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
                     mDatabase.child("users").child(user.getUid()).setValue(
-                            new User(user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()));
+                            new User(user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()),
+                            new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            Snackbar.make(findViewById(android.R.id.content), "Welcome "+user.getDisplayName(), Snackbar.LENGTH_LONG)
+                                    .show();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            },500);
+                        }
+                    });
 
                 }
                 else {
@@ -91,6 +104,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         };
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
 
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -136,7 +156,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         else {
                             Snackbar.make(findViewById(android.R.id.content), "Authentication Successful", Snackbar.LENGTH_LONG)
                                     .show();
-                            finish();
                         }
                     }
                 });
