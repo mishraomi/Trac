@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add List"
+            android:textSize="30dp"
+            android:textColor="#FFF" />
+
+    </LinearLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_floatingLabel="highlight"
+        app:met_floatingLabelText="List name"
+        app:met_floatingLabelTextSize="15dp"
+        app:met_primaryColor="@color/colorAccent"
+        app:met_hideUnderline="true"
+        android:hint="List name"
+        android:layout_marginTop="10dp"/>
+
+</LinearLayout>

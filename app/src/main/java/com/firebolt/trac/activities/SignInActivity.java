@@ -126,10 +126,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
                 // Google Sign In was successful, authenticate with Firebase
+                Log.d("Google Signin", "Google Sign in successful");
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
+                Log.d("Google Signin", "Google Sign in failed");
                 // ...
             }
         }

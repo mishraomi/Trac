@@ -33,6 +33,7 @@ dependencies {
 
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 
 }
 apply plugin: 'com.google.gms.google-services'

@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.firebolt.trac.R;
 
@@ -28,6 +30,7 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
         System.out.println("Adpater Contructor");
         this.landing_list_arraylist = landing_list_arraylist;
         this.activity = activity;
+        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -41,7 +44,7 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
     public void onBindViewHolder(Landing_List_Adapter.LandingListViewHolder holder, int position) {
         System.out.println("Position : "+position);
         holder.textview_listname.setText(landing_list_arraylist.get(position));
-
+        viewBinderHelper.bind(holder.swipe_reveal_layout, landing_list_arraylist.get(position));
     }
 
     @Override
@@ -58,15 +61,20 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
 
         CardView cardview_list;
         Button cardview_delete_button;
-        TextView textview_listname;
+        TextView textview_listname, textview_list_created_by, textview_listdate;
+        SwipeRevealLayout swipe_reveal_layout;
+        ImageView imageview_list_item_count;
 
 
         public LandingListViewHolder(View itemView) {
             super(itemView);
-
+            swipe_reveal_layout = (SwipeRevealLayout) itemView.findViewById(R.id.swipe_reveal_layout);
             cardview_list = (CardView) itemView.findViewById(R.id.cardview_list);
             cardview_delete_button = (Button) itemView.findViewById(R.id.cardview_delete_button);
             textview_listname = (TextView) itemView.findViewById(R.id.textview_listname);
+            textview_list_created_by = (TextView) itemView.findViewById(R.id.textview_list_created_by);
+            textview_listdate = (TextView) itemView.findViewById(R.id.textview_listdate);
+            imageview_list_item_count = (ImageView) itemView.findViewById(R.id.imageview_list_item_count);
         }
     }
 

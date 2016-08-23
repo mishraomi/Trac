@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.chauthai.swipereveallayout.SwipeRevealLayout
+    android:id="@+id/swipe_reveal_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,9 +9,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Your secondary layout here -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/cardview_delete_button"
@@ -18,29 +19,90 @@
             android:layout_height="60dp"
             android:backgroundTint="#000"
             android:background="@mipmap/ic_delete_forever_white_24dp"/>
-    </FrameLayout>
+    </LinearLayout>
 
     <!-- Your main layout here -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/cardview_list">
+            android:id="@+id/cardview_list"
+            android:layout_margin="10dp"
+            android:elevation="3dp">
 
-            <TextView
-                android:id="@+id/textview_listname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:text="List 1"
-                android:textSize="30dp"
-                android:layout_margin="20dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/imageview_list_item_count"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="7"
+                    android:layout_marginLeft="5dp">
+
+                    <TextView
+                        android:id="@+id/textview_listname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="List Name"
+                        android:textSize="30dp"
+                        android:layout_marginBottom="5dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="By :"
+                            android:textSize="30dp"/>
+
+                        <TextView
+                            android:id="@+id/textview_list_created_by"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Created by"
+                            android:textSize="30dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginBottom="5dp"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textview_listdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="List Date"
+                        android:textSize="30dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </android.support.v7.widget.CardView>
 
-    </FrameLayout>
+    </LinearLayout>
 
 </com.chauthai.swipereveallayout.SwipeRevealLayout>
