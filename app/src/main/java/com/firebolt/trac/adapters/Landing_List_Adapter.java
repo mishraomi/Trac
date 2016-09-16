@@ -1,6 +1,9 @@
 package com.firebolt.trac.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,9 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.firebolt.trac.R;
+import com.firebolt.trac.activities.ListItemActivity;
+import com.firebolt.trac.models.List;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -21,13 +28,12 @@ import java.util.ArrayList;
  */
 public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adapter.LandingListViewHolder> {
 
-    ArrayList<String> landing_list_arraylist = new ArrayList<>();
+    ArrayList<List> landing_list_arraylist = new ArrayList<>();
     Activity activity;
 
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
-    public Landing_List_Adapter(ArrayList<String> landing_list_arraylist, Activity activity) {
-        System.out.println("Adpater Contructor");
+    public Landing_List_Adapter(ArrayList<List> landing_list_arraylist, Activity activity) {
         this.landing_list_arraylist = landing_list_arraylist;
         this.activity = activity;
         viewBinderHelper.setOpenOnlyOne(true);
@@ -41,10 +47,39 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
     }
 
     @Override
-    public void onBindViewHolder(Landing_List_Adapter.LandingListViewHolder holder, int position) {
+    public void onBindViewHolder(final Landing_List_Adapter.LandingListViewHolder holder, final int position) {
         System.out.println("Position : "+position);
-        holder.textview_listname.setText(landing_list_arraylist.get(position));
-        viewBinderHelper.bind(holder.swipe_reveal_layout, landing_list_arraylist.get(position));
+
+        TextDrawable item_count_drawable = TextDrawable.builder()
+                .buildRect(String.valueOf(landing_list_arraylist.get(position).getList_item_count()),
+                        ContextCompat.getColor(activity, R.color.highPriority));
+        holder.imageview_list_item_count.setImageDrawable(item_count_drawable);
+        holder.textview_listname.setText(landing_list_arraylist.get(position).getList_name());
+        holder.textview_list_created_by.setText(landing_list_arraylist.get(position).getList_created_by());
+        holder.textview_listdate.setText(landing_list_arraylist.get(position).getList_creation_date());
+
+        holder.cardview_delete_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase.getInstance().getReference("all_list")
+                        .child(holder.textview_listname.getText().toString())
+                        .child("info")
+                        .removeValue();
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.cardview_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, ListItemActivity.class);
+                intent.putExtra("list_name", landing_list_arraylist.get(position).getList_name());
+                activity.startActivity(intent);
+            }
+        });
+
+        viewBinderHelper.bind(holder.swipe_reveal_layout, landing_list_arraylist.get(position).getList_name());
+
     }
 
     @Override
