@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,14 +19,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.firebolt.trac.R;
 
 import com.firebolt.trac.adapters.Landing_List_Adapter;
 import com.firebolt.trac.models.List;
+import com.firebolt.trac.utilities.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -35,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Dialog add_list_dialog;
     String current_user, current_user_uid;
     ArrayList<List> landing_list_arraylist;
+    String list_Type;
+    String new_list_name;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,58 +65,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         activity = MainActivity.this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(toolbar);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null){
-            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-            startActivity(intent);
-        }
-        else {
-            current_user = user.getDisplayName();
-            current_user_uid = user.getUid();
-        }
-
         landing_recyclerview = (RecyclerView) findViewById(R.id.landing_recyclerview);
         landing_list_arraylist = new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference("users")
-                .child(current_user_uid)
-                .child("my_list")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        System.out.println("ListDatasnapshot "+dataSnapshot);
-                        landing_list_arraylist.clear();
-                        for (DataSnapshot list_snapshot : dataSnapshot.getChildren()){
-                            Log.d("List Name", list_snapshot.getKey());
-                            Log.d("List Item count", list_snapshot.child("info").child("list_item_count").getValue().toString());
-                            Log.d("List Created by", list_snapshot.child("info").child("list_created_by").getValue().toString());
-                            Log.d("List Creation date", list_snapshot.child("info").child("list_creation_date").getValue().toString());
-                            Log.d("List Updated on", list_snapshot.child("info").child("list_updated_on").getValue().toString());
 
-                            List list_for_adapter = new List(
-                              list_snapshot.getKey(),
-                                    Integer.parseInt(list_snapshot.child("info").child("list_item_count").getValue().toString()),
-                                    list_snapshot.child("info").child("list_created_by").getValue().toString(),
-                                    list_snapshot.child("info").child("list_creation_date").getValue().toString(),
-                                    list_snapshot.child("info").child("list_updated_on").getValue().toString()
-                            );
-                            landing_list_arraylist.add(list_for_adapter);
-                            landing_adapter.notifyDataSetChanged();
-                            if (landing_list_arraylist.size()<1){
-                                landing_recyclerview.removeAllViews();
-                            }
-                        }
-                    }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent);
+        } else {
+            current_user = user.getDisplayName();
+            current_user_uid = user.getUid();
+            Constants.UID = user.getUid();
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+            getLanding_List();
+        }
 
         fab_add_list = (FloatingActionButton) findViewById(R.id.fab_add_list);
         landing_adapter = new Landing_List_Adapter(landing_list_arraylist, activity);
@@ -116,24 +90,87 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         landing_recyclerview.setLayoutManager(llm);
         landing_recyclerview.setAdapter(landing_adapter);
 
-
-
-
         fab_add_list.setOnClickListener(this);
 
     } //end of onCreate()
 
+    public void getLanding_List(){
+        final ArrayList<String> list_id_collection = new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference("users")
+                .child(current_user_uid)
+                .child("my_list")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        list_id_collection.clear();
+                        for (DataSnapshot list_snapshot : dataSnapshot.getChildren()) {
+                            list_id_collection.add(list_snapshot.getKey());
+                        }
+                        get_Landing_List_Info(list_id_collection);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void get_Landing_List_Info(ArrayList<String> list_ids){
+        landing_list_arraylist.clear();
+        for (int i=0; i<list_ids.size(); i++){
+            FirebaseDatabase.getInstance()
+                    .getReference("all_list")
+                    .child(list_ids.get(i))
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            System.out.println("dataSnapshot *** " + dataSnapshot);
+                            if (dataSnapshot.getValue() != null){
+                                List list_for_adapter = new List(
+                                        dataSnapshot.child("info").child("list_name").getValue().toString(),
+                                        Integer.parseInt(dataSnapshot.child("info").child("list_item_count").getValue().toString()),
+                                        dataSnapshot.child("info").child("list_created_by").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_creation_date").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_updated_on").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_type").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_id").getValue().toString()
+                                );
+                                landing_list_arraylist.add(list_for_adapter);
+                                landing_adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            current_user = user.getDisplayName();
+            current_user_uid = user.getUid();
+        }
+    }
+
     @Override
     public void onClick(View view) {
         int view_id = view.getId();
-        switch (view_id){
+        switch (view_id) {
             case R.id.fab_add_list:
                 show_add_list_dialog();
                 break;
         }
     }
 
-    public void show_add_list_dialog(){
+    public void show_add_list_dialog() {
+        list_Type = "private";
         add_list_dialog = new Dialog(MainActivity.this);
         add_list_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         add_list_dialog.setContentView(R.layout.dialog_add_list);
@@ -143,31 +180,81 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         add_list_dialog.show();
         add_list_dialog.getWindow().setAttributes(lp);
 
+        final TextDrawable selected_button_drawable = TextDrawable.builder()
+                .buildRect("",
+                        ContextCompat.getColor(activity, R.color.highPriority));
+
+        final TextDrawable normal_button_drawable = TextDrawable.builder()
+                .buildRect("", Color.WHITE);
+
         Button dialog_add_list_ok, dialog_add_list_cancel;
         final MaterialEditText dialog_edittext_listname;
+        final Button button_private_list, button_shared_list;
         dialog_edittext_listname = (MaterialEditText) add_list_dialog.findViewById(R.id.dialog_edittext_listname);
         dialog_add_list_ok = (Button) add_list_dialog.findViewById(R.id.dialog_add_list_ok);
         dialog_add_list_cancel = (Button) add_list_dialog.findViewById(R.id.dialog_add_list_cancel);
+        button_private_list = (Button) add_list_dialog.findViewById(R.id.button_private_list);
+        button_shared_list = (Button) add_list_dialog.findViewById(R.id.button_shared_list);
+
+        button_private_list.setBackground(selected_button_drawable);
+        button_shared_list.setBackground(normal_button_drawable);
+
+        View.OnClickListener private_shared_button_listner = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.button_private_list:
+                        button_private_list.setBackground(selected_button_drawable);
+                        button_shared_list.setBackground(normal_button_drawable);
+                        list_Type = "private";
+                        break;
+
+                    case R.id.button_shared_list:
+                        button_private_list.setBackground(normal_button_drawable);
+                        button_shared_list.setBackground(selected_button_drawable);
+                        list_Type = "shared";
+                        break;
+                }
+            }
+        };
+
+        button_private_list.setOnClickListener(private_shared_button_listner);
+        button_shared_list.setOnClickListener(private_shared_button_listner);
 
         View.OnClickListener dialog_button_listner = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.dialog_add_list_ok:
-                        if (dialog_edittext_listname.getText().length() > 0){
-                            List list = new List(dialog_edittext_listname.getText().toString(),
-                                    0, current_user, new Date().toString(), "Not yet");
+                        if (dialog_edittext_listname.getText().length() > 0) {
+                            new_list_name = dialog_edittext_listname.getText().toString();
                             FirebaseDatabase.getInstance().getReference("users")
                                     .child(current_user_uid)
                                     .child("my_list")
-                                    .child(dialog_edittext_listname.getText().toString())
-                                    .child("info")
-                                    .setValue(list);
-                            Snackbar.make(activity.findViewById(android.R.id.content),
-                                    dialog_edittext_listname.getText().toString() + " created",
-                                    Snackbar.LENGTH_SHORT)
-                                    .show();
-                            add_list_dialog.dismiss();
+                                    .push()
+                                    .child("list_name")
+                                    .setValue(dialog_edittext_listname.getText().toString(), new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                            final List list = new List(dialog_edittext_listname.getText().toString(),
+                                                    0,
+                                                    current_user,
+                                                    String.valueOf(System.currentTimeMillis()),
+                                                    "Not yet",
+                                                    list_Type,
+                                                    databaseReference.getParent().getKey());
+                                            FirebaseDatabase.getInstance()
+                                                    .getReference("all_list")
+                                                    .child(databaseReference.getParent().getKey())
+                                                    .child("info")
+                                                    .setValue(list);
+                                            Snackbar.make(activity.findViewById(android.R.id.content),
+                                                    dialog_edittext_listname.getText().toString() + " created",
+                                                    Snackbar.LENGTH_SHORT)
+                                                    .show();
+                                            add_list_dialog.dismiss();
+                                        }
+                                    });
                         }
                         break;
 

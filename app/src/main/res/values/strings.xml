@@ -13,5 +13,6 @@
         <item>Mid</item>
         <item>Low</item>
     </string-array>
+    <string name="title_activity_splash_screen">SplashScreen</string>
 
 </resources>

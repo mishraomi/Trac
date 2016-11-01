@@ -24,7 +24,10 @@ import com.firebolt.trac.activities.ListItemActivity;
 import com.firebolt.trac.models.List_Item;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Firebolt-Mesh on 9/9/2016.
@@ -61,8 +64,6 @@ public class List_Items_Adapter extends RecyclerView.Adapter<List_Items_Adapter.
                 .buildRect(String.valueOf(list_item_arraylist.get(position).getItem_quantity()),
                         Color.LTGRAY);
 
-
-
         TextDrawable item_unit_drawable = TextDrawable.builder()
                 .beginConfig()
                 .textColor(Color.WHITE)
@@ -79,7 +80,11 @@ public class List_Items_Adapter extends RecyclerView.Adapter<List_Items_Adapter.
         holder.imageview_item_unit_type.setImageDrawable(item_unit_drawable);
         holder.imageview_item_quantity.setImageDrawable(item_count_drawable);
         holder.textview_item_name.setText(list_item_arraylist.get(position).getItem_name());
-        holder.textview_item_added_on.setText(list_item_arraylist.get(position).getItem_added_timestamp());
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.ENGLISH);
+        String date = formatter.format(new Date(Long.parseLong(list_item_arraylist.get(position).getItem_added_timestamp())));
+
+        holder.textview_item_added_on.setText(date);
         viewBinderHelper.bind(holder.swipe_reveal_layout, list_item_arraylist.get(position).getItem_name());
         holder.cardview_delete_button.setOnClickListener(new View.OnClickListener() {
             @Override

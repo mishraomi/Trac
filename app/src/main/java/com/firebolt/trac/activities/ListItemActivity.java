@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import com.firebolt.trac.R;
 import com.firebolt.trac.adapters.List_Items_Adapter;
 import com.firebolt.trac.models.List_Item;
+import com.firebolt.trac.utilities.Constants;
 import com.firebolt.trac.utilities.SortArraylist;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,9 +41,10 @@ public class ListItemActivity extends AppCompatActivity {
     FloatingActionButton fab_add_item;
     Dialog add_list_item_dialog;
     public static String list_name;
+    private String list_id;
     RecyclerView list_item_recyclerview;
     List_Items_Adapter list_items_adapter;
-    ArrayList<List_Item> list_item_arraylist;
+    ArrayList<List_Item> list_item_arraylist = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class ListItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         list_name = intent.getStringExtra("list_name");
+        list_id = intent.getStringExtra("list_id");
 
         activity = ListItemActivity.this;
         fab_add_item = (FloatingActionButton) findViewById(R.id.fab_add_list_item);
@@ -61,15 +64,25 @@ public class ListItemActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         setSupportActionBar(toolbar);
 
+        Collections.sort(list_item_arraylist, new SortArraylist());
+        System.out.println("Sorted Arraylist "+list_item_arraylist);
+
+        list_items_adapter = new List_Items_Adapter(ListItemActivity.this, list_item_arraylist);
+        list_item_recyclerview.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+        list_item_recyclerview.setLayoutManager(llm);
+        System.out.println("list_item_arraylist "+list_item_arraylist);
+        list_item_recyclerview.setAdapter(list_items_adapter);
+
         FirebaseDatabase.getInstance()
                 .getReference("all_list")
-                .child(list_name)
+                .child(list_id)
                 .child("items")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         System.out.println("dataSnapshot "+dataSnapshot);
-                        list_item_arraylist = new ArrayList<>();
+                        list_item_arraylist.clear();
                         for (DataSnapshot list_item : dataSnapshot.getChildren()){
                             list_item_arraylist.add(
                                     new List_Item(list_item.getKey(),
@@ -77,17 +90,8 @@ public class ListItemActivity extends AppCompatActivity {
                                             list_item.child("item_measure_type").getValue().toString(),
                                             Integer.parseInt(list_item.child("item_priority").getValue().toString()),
                                             list_item.child("item_added_timestamp").getValue().toString()));
+                            list_items_adapter.notifyDataSetChanged();
                         }
-
-                        Collections.sort(list_item_arraylist, new SortArraylist());
-                        System.out.println("Sorted Arraylist "+list_item_arraylist);
-
-                        list_items_adapter = new List_Items_Adapter(ListItemActivity.this, list_item_arraylist);
-                        list_item_recyclerview.setHasFixedSize(true);
-                        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
-                        list_item_recyclerview.setLayoutManager(llm);
-                        System.out.println("list_item_arraylist "+list_item_arraylist);
-                        list_item_recyclerview.setAdapter(list_items_adapter);
                     }
 
                     @Override
@@ -96,12 +100,11 @@ public class ListItemActivity extends AppCompatActivity {
                     }
                 });
 
-
-
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(activity, MainActivity.class);
+                startActivity(intent);
                 finish();
             }
         });
@@ -115,14 +118,14 @@ public class ListItemActivity extends AppCompatActivity {
 
 
         FirebaseDatabase.getInstance().getReference("all_list")
-                .child(list_name)
+                .child(list_id)
                 .child("items")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         FirebaseDatabase.getInstance().getReference("all_list")
-                                .child(list_name)
+                                .child(list_id)
                                 .child("info")
                                 .child("list_item_count")
                                 .setValue(dataSnapshot.getChildrenCount());
@@ -193,14 +196,14 @@ public class ListItemActivity extends AppCompatActivity {
                                 break;
                         }
                         FirebaseDatabase.getInstance().getReference("all_list")
-                                .child(list_name)
+                                .child(list_id)
                                 .child("items")
                                 .child(dialog_edittext_item_name.getText().toString())
                                 .setValue(new List_Item(dialog_edittext_item_name.getText().toString(),
                                         dialog_edittext_quantity.getText().toString(),
                                         dialog_spinner_quantity_type.getSelectedItem().toString(),
                                         priority,
-                                        DateFormat.getDateTimeInstance().format(new Date())));
+                                        String.valueOf(System.currentTimeMillis())));
 
                         add_list_item_dialog.dismiss();
                         Snackbar.make(activity.findViewById(android.R.id.content),

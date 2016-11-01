@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/tools"
-
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add List"
+            android:text="Add Contributor"
             android:textSize="25dp"
             android:textColor="#FFF"
             android:layout_margin="@dimen/activity_vertical_margin"/>
@@ -24,7 +23,7 @@
     </LinearLayout>
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/dialog_edittext_listname"
+        android:id="@+id/dialog_edittext_contributor_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
@@ -34,33 +33,9 @@
         app:met_floatingLabelTextSize="15dp"
         app:met_primaryColor="@color/colorPrimary"
         app:met_hideUnderline="true"
-        android:hint="List name"
+        android:hint="Contributor's Email"
         android:layout_marginTop="10dp"
         android:layout_margin="@dimen/activity_vertical_margin"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/button_private_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Private"
-            android:layout_marginLeft="5dp"
-            android:tag="10"/>
-
-        <Button
-            android:id="@+id/button_shared_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Shared"
-            android:tag="20"/>
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,11 +48,10 @@
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
 
         <Button
-            android:id="@+id/dialog_add_list_cancel"
+            android:id="@+id/dialog_add_contributor_cancel"
             android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:background="@mipmap/ic_close_black_24dp"
@@ -86,9 +60,8 @@
             android:layout_marginRight="@dimen/activity_vertical_margin"
             style="?android:attr/borderlessButtonStyle"/>
 
-
         <Button
-            android:id="@+id/dialog_add_list_ok"
+            android:id="@+id/dialog_add_contributor_ok"
             android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:background="@mipmap/ic_done_black_24dp"
@@ -98,9 +71,5 @@
             style="?android:attr/borderlessButtonStyle"/>
 
     </LinearLayout>
-
-
-
-
 
 </LinearLayout>

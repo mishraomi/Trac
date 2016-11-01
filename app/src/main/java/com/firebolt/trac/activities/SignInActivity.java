@@ -42,7 +42,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth.AuthStateListener mAuthListener;
     DatabaseReference mDatabase;
 
-
     Button signin_button;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +77,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
-                    mDatabase.child("users").child(user.getUid()).setValue(
+                    mDatabase.child("users")
+                            .child(user.getUid())
+                            .child("info")
+                            .setValue(
                             new User(user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()),
                             new DatabaseReference.CompletionListener() {
                         @Override
@@ -99,7 +101,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // ...
             }
         };
 
