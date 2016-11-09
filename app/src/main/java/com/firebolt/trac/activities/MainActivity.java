@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,12 +51,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FloatingActionButton fab_add_list;
     Landing_List_Adapter landing_adapter;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     Dialog add_list_dialog;
     String current_user, current_user_uid;
     ArrayList<List> landing_list_arraylist;
     String list_Type;
     String new_list_name;
+    final ArrayList<String> list_id_collection = new ArrayList<>();
 
 
     @Override
@@ -80,8 +84,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             current_user_uid = user.getUid();
             Constants.UID = user.getUid();
 
-            getLanding_List();
+            //getLanding_List();
+
+
+
+            FirebaseDatabase.getInstance().getReference("users")
+                    .child(current_user_uid)
+                    .child("my_list")
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() == null){
+                                list_id_collection.clear();
+                                landing_list_arraylist.clear();
+                                landing_adapter.notifyDataSetChanged();
+                            }
+                            else {
+                                System.out.println("Duplicate my_list *** "+dataSnapshot);
+                                list_id_collection.clear();
+                                for (DataSnapshot list_snapshot : dataSnapshot.getChildren()) {
+                                    list_id_collection.add(list_snapshot.getKey());
+                                }
+                                if (!list_id_collection.isEmpty()){
+                                    HashSet<String> id_collection_set = new HashSet<>();
+                                    id_collection_set.addAll(list_id_collection);
+                                    list_id_collection.clear();
+                                    list_id_collection.addAll(id_collection_set);
+
+                                    get_Landing_List_Info(list_id_collection);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
         }
+
 
         fab_add_list = (FloatingActionButton) findViewById(R.id.fab_add_list);
         landing_adapter = new Landing_List_Adapter(landing_list_arraylist, activity);
@@ -94,15 +135,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     } //end of onCreate()
 
-    public void getLanding_List(){
+    /*public void getLanding_List(){
         final ArrayList<String> list_id_collection = new ArrayList<>();
+        landing_list_arraylist.clear();
         FirebaseDatabase.getInstance().getReference("users")
                 .child(current_user_uid)
                 .child("my_list")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        System.out.println("Duplicate my_list *** "+dataSnapshot);
                         list_id_collection.clear();
+                        landing_list_arraylist.clear();
                         for (DataSnapshot list_snapshot : dataSnapshot.getChildren()) {
                             list_id_collection.add(list_snapshot.getKey());
                         }
@@ -114,9 +158,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 });
-    }
+    }*/
 
     public void get_Landing_List_Info(ArrayList<String> list_ids){
+        System.out.println("Duplicate list_ids *** "+list_ids);
         landing_list_arraylist.clear();
         for (int i=0; i<list_ids.size(); i++){
             FirebaseDatabase.getInstance()
@@ -125,12 +170,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            System.out.println("dataSnapshot *** " + dataSnapshot);
+                            System.out.println("Duplicate list_item_key *** "+dataSnapshot.getKey());
                             if (dataSnapshot.getValue() != null){
                                 List list_for_adapter = new List(
                                         dataSnapshot.child("info").child("list_name").getValue().toString(),
                                         Integer.parseInt(dataSnapshot.child("info").child("list_item_count").getValue().toString()),
                                         dataSnapshot.child("info").child("list_created_by").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_owner_id").getValue().toString(),
                                         dataSnapshot.child("info").child("list_creation_date").getValue().toString(),
                                         dataSnapshot.child("info").child("list_updated_on").getValue().toString(),
                                         dataSnapshot.child("info").child("list_type").getValue().toString(),
@@ -139,6 +185,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 landing_list_arraylist.add(list_for_adapter);
                                 landing_adapter.notifyDataSetChanged();
                             }
+                            System.out.println("Duplicate landing_list_arraylist *** "+landing_list_arraylist);
+
                         }
 
                         @Override
@@ -239,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             final List list = new List(dialog_edittext_listname.getText().toString(),
                                                     0,
                                                     current_user,
+                                                    Constants.UID,
                                                     String.valueOf(System.currentTimeMillis()),
                                                     "Not yet",
                                                     list_Type,

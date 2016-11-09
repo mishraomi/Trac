@@ -1,5 +1,6 @@
 package com.firebolt.trac.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -34,6 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import dmax.dialog.SpotsDialog;
+
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final String TAG = "Firebolt";
     private static final int RC_SIGN_IN = 9001;
@@ -41,7 +44,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     DatabaseReference mDatabase;
-
+    AlertDialog dialog;
     Button signin_button;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +117,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
 
     private void signIn() {
+        dialog = new SpotsDialog(this);
+        dialog.show();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -132,6 +137,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
+                if (dialog.isShowing()){
+                    dialog.dismiss();
+                }
                 Log.d("Google Signin", "Google Sign in failed");
                 // ...
             }
@@ -152,11 +160,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            dialog.dismiss();
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                         else {
+                            dialog.dismiss();
                             Snackbar.make(findViewById(android.R.id.content), "Authentication Successful", Snackbar.LENGTH_LONG)
                                     .show();
                         }
@@ -172,5 +182,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (dialog.isShowing()){
+            dialog.dismiss();
+        }
     }
 }
