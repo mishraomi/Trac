@@ -10,13 +10,23 @@ public class List_Item {
     String item_measure_type;
     int item_priority;
     String item_added_timestamp;
+    String item_purchased;
 
-    public List_Item(String item_name, String item_quantity, String item_measure_type, int item_priority, String item_added_timestamp) {
+    public List_Item(String item_name, String item_quantity, String item_measure_type, int item_priority, String item_added_timestamp, String item_purchased) {
         this.item_name = item_name;
         this.item_quantity = item_quantity;
         this.item_measure_type = item_measure_type;
         this.item_priority = item_priority;
         this.item_added_timestamp = item_added_timestamp;
+        this.item_purchased = item_purchased;
+    }
+
+    public String getItem_purchased() {
+        return item_purchased;
+    }
+
+    public void setItem_purchased(String item_purchased) {
+        this.item_purchased = item_purchased;
     }
 
     public String getItem_added_timestamp() {

@@ -41,7 +41,7 @@ public class ListItemActivity extends AppCompatActivity {
     FloatingActionButton fab_add_item;
     Dialog add_list_item_dialog;
     public static String list_name;
-    private String list_id;
+    public String list_id;
     RecyclerView list_item_recyclerview;
     List_Items_Adapter list_items_adapter;
     ArrayList<List_Item> list_item_arraylist = new ArrayList<>();
@@ -67,7 +67,7 @@ public class ListItemActivity extends AppCompatActivity {
         Collections.sort(list_item_arraylist, new SortArraylist());
         System.out.println("Sorted Arraylist "+list_item_arraylist);
 
-        list_items_adapter = new List_Items_Adapter(ListItemActivity.this, list_item_arraylist);
+        list_items_adapter = new List_Items_Adapter(ListItemActivity.this, list_item_arraylist, list_id);
         list_item_recyclerview.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         list_item_recyclerview.setLayoutManager(llm);
@@ -89,7 +89,8 @@ public class ListItemActivity extends AppCompatActivity {
                                             list_item.child("item_quantity").getValue().toString(),
                                             list_item.child("item_measure_type").getValue().toString(),
                                             Integer.parseInt(list_item.child("item_priority").getValue().toString()),
-                                            list_item.child("item_added_timestamp").getValue().toString()));
+                                            list_item.child("item_added_timestamp").getValue().toString(),
+                                            list_item.child("item_purchased").getValue().toString()));
                             list_items_adapter.notifyDataSetChanged();
                         }
                     }
@@ -203,7 +204,8 @@ public class ListItemActivity extends AppCompatActivity {
                                         dialog_edittext_quantity.getText().toString(),
                                         dialog_spinner_quantity_type.getSelectedItem().toString(),
                                         priority,
-                                        String.valueOf(System.currentTimeMillis())));
+                                        String.valueOf(System.currentTimeMillis()),
+                                        "false"));
 
                         add_list_item_dialog.dismiss();
                         Snackbar.make(activity.findViewById(android.R.id.content),

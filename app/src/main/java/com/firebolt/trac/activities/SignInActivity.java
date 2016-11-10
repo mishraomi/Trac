@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.firebolt.trac.R;
 import com.firebolt.trac.models.User;
+import com.firebolt.trac.utilities.Constants;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -79,7 +80,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
+                    Constants.UID = user.getUid();
                     mDatabase.child("users")
                             .child(user.getUid())
                             .child("info")
@@ -95,7 +96,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 public void run() {
                                     finish();
                                 }
-                            },500);
+                            },200);
                         }
                     });
 
