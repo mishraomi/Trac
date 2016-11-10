@@ -42,6 +42,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FloatingActionButton fab_add_list;
     Landing_List_Adapter landing_adapter;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     Dialog add_list_dialog;
     String current_user, current_user_uid;
     ArrayList<List> landing_list_arraylist;
-    final ArrayList<String> list_id_collection = new ArrayList<>();
     String list_Type;
     String new_list_name;
+    final ArrayList<String> list_id_collection = new ArrayList<>();
 
 
     @Override
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         dataSnapshot.child("info").child("list_name").getValue().toString(),
                                         Integer.parseInt(dataSnapshot.child("info").child("list_item_count").getValue().toString()),
                                         dataSnapshot.child("info").child("list_created_by").getValue().toString(),
+                                        dataSnapshot.child("info").child("list_owner_id").getValue().toString(),
                                         dataSnapshot.child("info").child("list_creation_date").getValue().toString(),
                                         dataSnapshot.child("info").child("list_updated_on").getValue().toString(),
                                         dataSnapshot.child("info").child("list_type").getValue().toString(),
@@ -256,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             final List list = new List(dialog_edittext_listname.getText().toString(),
                                                     0,
                                                     current_user,
+                                                    Constants.UID,
                                                     String.valueOf(System.currentTimeMillis()),
                                                     "Not yet",
                                                     list_Type,

@@ -1,5 +1,7 @@
 package com.firebolt.trac.models;
 
+import java.util.Map;
+
 /**
  * Created by Firebolt-Mesh on 8/27/2016.
  */
@@ -8,19 +10,30 @@ public class List {
     private String list_name;
     private int list_item_count;
     private String list_created_by;
+    private String list_owner_id;
     private String list_creation_date;
     private String list_updated_on;
     private String list_type;
     private String list_id;
 
-    public List(String list_name, int list_item_count, String list_created_by, String list_creation_date, String list_updated_on, String list_type, String list_id) {
+
+    public List(String list_name, int list_item_count, String list_created_by, String list_owner_id, String list_creation_date, String list_updated_on, String list_type, String list_id) {
         this.list_name = list_name;
         this.list_item_count = list_item_count;
         this.list_created_by = list_created_by;
+        this.list_owner_id = list_owner_id;
         this.list_creation_date = list_creation_date;
         this.list_updated_on = list_updated_on;
         this.list_type = list_type;
         this.list_id = list_id;
+    }
+
+    public String getList_owner_id() {
+        return list_owner_id;
+    }
+
+    public void setList_owner_id(String list_owner_id) {
+        this.list_owner_id = list_owner_id;
     }
 
     public String getList_id() {

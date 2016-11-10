@@ -50,6 +50,7 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
     ArrayList<List> landing_list_arraylist = new ArrayList<>();
     Activity activity;
     Dialog add_contributor_dialog;
+    private DatabaseReference mDatabase;
 
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
@@ -57,6 +58,7 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
         this.landing_list_arraylist = landing_list_arraylist;
         this.activity = activity;
         viewBinderHelper.setOpenOnlyOne(true);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -68,8 +70,7 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
 
     @Override
     public void onBindViewHolder(final Landing_List_Adapter.LandingListViewHolder holder, final int position) {
-        System.out.println("Position : "+position);
-
+        viewBinderHelper.bind(holder.swipe_reveal_layout, landing_list_arraylist.get(position).getList_id());
         TextDrawable item_count_drawable = TextDrawable.builder()
                 .buildRect(String.valueOf(landing_list_arraylist.get(position).getList_item_count()),
                         ContextCompat.getColor(activity, R.color.highPriority));
@@ -85,19 +86,61 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
             @Override
             public void onClick(View view) {
                 final String list_id = landing_list_arraylist.get(position).getList_id();
-
-                FirebaseDatabase.getInstance()
-                        .getReference("users")
-                        .child(Constants.UID)
-                        .child("my_list")
+                mDatabase.child("all_list")
                         .child(list_id)
-                        .removeValue(new DatabaseReference.CompletionListener() {
+                        .child("info")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                FirebaseDatabase.getInstance()
-                                        .getReference("all_list")
-                                        .child(list_id)
-                                        .removeValue();
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.child("list_owner_id").getValue().toString().equalsIgnoreCase(Constants.UID)){
+                                    FirebaseDatabase.getInstance()
+                                            .getReference("users")
+                                            .child(Constants.UID)
+                                            .child("my_list")
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    for (DataSnapshot list_key : dataSnapshot.getChildren()){
+                                                        if (list_key.getKey().equalsIgnoreCase(list_id)){
+                                                            mDatabase.child("users")
+                                                                    .child(Constants.UID)
+                                                                    .child("my_list")
+                                                                    .child(list_id)
+                                                                    .removeValue(new DatabaseReference.CompletionListener() {
+                                                                        @Override
+                                                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                                            FirebaseDatabase.getInstance()
+                                                                                    .getReference("all_list")
+                                                                                    .child(list_id)
+                                                                                    .removeValue();
+                                                                            notifyDataSetChanged();
+                                                                            Snackbar.make(activity.findViewById(android.R.id.content), "List deleted successfully", Snackbar.LENGTH_SHORT)
+                                                                                    .show();
+                                                                        }
+                                                                    });
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                }
+                                else {
+                                    viewBinderHelper.closeLayout(landing_list_arraylist.get(position).getList_id());
+                                    Snackbar.make(activity.findViewById(android.R.id.content),
+                                            "You are not Authorized to delete this list !",
+                                            Snackbar.LENGTH_SHORT)
+                                            .show();
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
                             }
                         });
             }
@@ -124,8 +167,6 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
                 show_add_contributor_dialog(position);
             }
         });
-
-        viewBinderHelper.bind(holder.swipe_reveal_layout, landing_list_arraylist.get(position).getList_name());
 
         holder.more_layout.setOnClickListener(new View.OnClickListener() {
             @Override

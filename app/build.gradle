@@ -12,7 +12,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "com.firebolt.trac"
+        applicationId "com.firebolt.development.trac"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -48,6 +48,9 @@ dependencies {
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.github.aakira:expandable-layout:1.5.1@aar'
     compile 'us.belka:androidtoggleswitch:1.2.0'
+
+    //dialog box
+    compile 'com.github.d-max:spots-dialog:0.7@aar'
 
     //Splash screen animation
     compile 'me.wangyuwei:ParticleView:1.0.4'

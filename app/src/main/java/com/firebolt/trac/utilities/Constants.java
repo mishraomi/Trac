@@ -5,6 +5,6 @@ package com.firebolt.trac.utilities;
  */
 public class Constants {
 
-    public static String FIREBASE_URL = "https://trac-6e746.firebaseio.com/";
+    public static String FIREBASE_URL = "https://trac-dev.firebaseio.com/";
     public static String UID;
 }

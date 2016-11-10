@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add Item"
-            android:textSize="25dp"
+            android:textSize="23dp"
             android:textColor="#FFF"
             android:layout_margin="@dimen/activity_vertical_margin"/>
 
@@ -47,7 +47,7 @@
             android:singleLine="true"
             app:met_clearButton="true"
             app:met_floatingLabel="highlight"
-            app:met_floatingLabelText="Item name"
+            app:met_floatingLabelText="Quantity"
             app:met_primaryColor="@color/colorPrimary"
             app:met_hideUnderline="true"
             android:hint="Quantity" />
