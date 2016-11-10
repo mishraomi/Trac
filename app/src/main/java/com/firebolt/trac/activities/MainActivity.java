@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Dialog add_list_dialog;
     String current_user, current_user_uid;
     ArrayList<List> landing_list_arraylist;
+    final ArrayList<String> list_id_collection = new ArrayList<>();
     String list_Type;
     String new_list_name;
 
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (user == null) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(intent);
+            finish();
         } else {
             current_user = user.getDisplayName();
             current_user_uid = user.getUid();
@@ -95,18 +98,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     } //end of onCreate()
 
     public void getLanding_List(){
-        final ArrayList<String> list_id_collection = new ArrayList<>();
         FirebaseDatabase.getInstance().getReference("users")
                 .child(current_user_uid)
                 .child("my_list")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        list_id_collection.clear();
-                        for (DataSnapshot list_snapshot : dataSnapshot.getChildren()) {
-                            list_id_collection.add(list_snapshot.getKey());
+                        if (dataSnapshot.getValue() == null){
+                            list_id_collection.clear();
+                            landing_list_arraylist.clear();
+                            landing_adapter.notifyDataSetChanged();
                         }
-                        get_Landing_List_Info(list_id_collection);
+                        else {
+                            System.out.println("Duplicate my_list *** "+dataSnapshot);
+                            list_id_collection.clear();
+                            for (DataSnapshot list_snapshot : dataSnapshot.getChildren()) {
+                                list_id_collection.add(list_snapshot.getKey());
+                            }
+                            if (!list_id_collection.isEmpty()){
+                                HashSet<String> id_collection_set = new HashSet<>();
+                                id_collection_set.addAll(list_id_collection);
+                                list_id_collection.clear();
+                                list_id_collection.addAll(id_collection_set);
+
+                                get_Landing_List_Info(list_id_collection);
+                            }
+                        }
                     }
 
                     @Override

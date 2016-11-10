@@ -214,24 +214,22 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         for (DataSnapshot user_info : dataSnapshot.getChildren()){
-                                            if (user_info.child("email").getValue().toString()
+                                            if (user_info.child("info").child("email").getValue().toString()
                                                     .equalsIgnoreCase(dialog_edittext_contributor_email
                                                     .getText().toString())){
                                                 FirebaseDatabase.getInstance()
                                                         .getReference("users")
                                                         .child(user_info.getKey())
-                                                        .child("contributing")
-                                                        .child(landing_list_arraylist.get(position).getList_name())
-                                                        .setValue(landing_list_arraylist.get(position));
+                                                        .child("my_list")
+                                                        .child(landing_list_arraylist.get(position).getList_id())
+                                                        .setValue(landing_list_arraylist.get(position).getList_name(),
+                                                                new DatabaseReference.CompletionListener() {
+                                                                    @Override
+                                                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                                        add_contributor_dialog.dismiss();
+                                                                    }
+                                                                });
 
-                                                FirebaseDatabase.getInstance()
-                                                        .getReference("users")
-                                                        .child(user_info.getKey())
-                                                        .child("contributing")
-                                                        .child(landing_list_arraylist.get(position).getList_name())
-                                                        .child("contributors")
-                                                        .updateChildren(getUserDetails(dialog_edittext_contributor_email
-                                                        .getText().toString()));
                                             }
                                         }
                                     }
@@ -265,13 +263,10 @@ public class Landing_List_Adapter extends RecyclerView.Adapter<Landing_List_Adap
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot user_info : dataSnapshot.getChildren()){
-                            if (user_info.child("email").getValue().toString().equals(user_email)){
-                                System.out.println("user_detail dispalyname "+user_info.child("displayName").getValue().toString());
-                                System.out.println("user_detail email "+user_info.child("email").getValue().toString());
-                                System.out.println("user_detail imageUrl "+user_info.child("imageUrl").getValue().toString());
-                                User user = new User(user_info.child("displayName").getValue().toString(),
-                                        user_info.child("email").getValue().toString(),
-                                        user_info.child("imageUrl").getValue().toString());
+                            if (user_info.child("info").child("email").getValue().toString().equals(user_email)){
+                                User user = new User(user_info.child("info").child("displayName").getValue().toString(),
+                                        user_info.child("info").child("email").getValue().toString(),
+                                        user_info.child("info").child("imageUrl").getValue().toString());
                                 user_detail.put(user_info.getKey(), user);
                             }
                         }
